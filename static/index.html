@@ -63,10 +63,6 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
 
 world = {};
 
-function retrieveWorld(data) {
-    world = data;
-}
-
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
@@ -278,7 +274,22 @@ function update() {
     drawNextFrame();
 
     var url = 'http://127.0.0.1:5000/world'; 
-    sendJSONXMLHTTPRequest(url, null, retrieveWorld); 
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState==4) {
+            try {
+                if (xhr.status==200) {
+                    var data = JSON.parse(xhr.responseText); 
+                    world = data;
+                }
+            } 
+            catch(e) {
+                alert('Error: ' + e.name);
+            }
+        }
+    };
+    xhr.open('GET', url, true);
+    xhr.send(''); 
 
     drawFrame();
 }
